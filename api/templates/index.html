@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Web App</title>
+</head>
+<body>
+    <h1>OCR Web App</h1>
+    <input type="file" id="imageInput" accept="image/*" capture="environment">
+
+    <div id="result">
+        <!-- The extracted text will be displayed here -->
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const resultDiv = document.getElementById('result');
+
+        // Event listener for the file input
+        imageInput.addEventListener('change', function() {
+            // Convert the selected image to a Blob and set it as a File in a FormData
+            const file = imageInput.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+
+            // Send the image to the server for processing
+            fetch('/process_image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(text => {
+                resultDiv.textContent = text;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.textContent = 'Error occurred during processing.';
+            });
+        });
+    </script>
+</body>
+</html>
